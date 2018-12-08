@@ -27,7 +27,7 @@ while cap.isOpened():
     car = detect.detect_car(img)
     if not car:
         cv2.imshow("draw_img", img)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'): # wait(1) 以实现在查找失败时，瞬间进入下一循环继续查找
             break
         continue
 
@@ -38,7 +38,7 @@ while cap.isOpened():
     cv2.circle(img, tuple(tail), 3, (255, 0, 0), -1)
     cv2.imshow("draw_img", img)
 
-    if cv2.waitKey(100) & 0xFF == ord('q'):
+    if cv2.waitKey(100) & 0xFF == ord('q'): # wait(100) 以实现间隔100ms的拍摄
         break
 
 cap.release()
