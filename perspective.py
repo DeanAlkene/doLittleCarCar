@@ -1,66 +1,27 @@
-"""
-一开始的时候手动点4个corners来进行透视变换，要按顺序点噢
-顺序：1 2
-     3 4 噢
-"""
-import cv2
+# -*- coding: utf-8 -*-
 import numpy as np
-
-CAP = cv2.VideoCapture(1)  # 开摄像头看东西噢
-
-# GUI
-corners = []
-img_copy = CAP.read()[1]
+import cv2
+import matplotlib.pyplot as plt
 
 
-def draw_point(event, x, y, flags, param):
-    global corners, img_copy
+def Perspective(address, matrixA, matrixB):
+    img = cv2.imread(address)
+    rows, cols, ch = img.shape
 
-    if event == cv2.EVENT_LBUTTONDOWN:
-        corners.append((x, y))
-    elif event == cv2.EVENT_LBUTTONUP:
-        cv2.circle(img_copy, (x, y), 3, (0, 0, 255), -1)
+    pts1 = np.float32(matrixA)
+    pts2 = np.float32(matrixB)
 
-
-cv2.namedWindow('image')
-cv2.setMouseCallback('image', draw_point)
-
-print("Please click 4 corners (enter 's' to start, 'e' to end): ")
-
-# 开始标定
-while True:
-    _, img = CAP.read()
-    cv2.imshow('image', img)
-    if cv2.waitKey(1) == ord('s'):
-        print('s')
-        break
-img_copy = img.copy()
-while True:
-    cv2.imshow('image', img_copy)
-    if cv2.waitKey(1) == ord('e'):
-        print('e')
-        break
-cv2.destroyAllWindows()
-# 标定完成
-
-width, height = 640, 480
-
-
-def perspective(img):
-    pts1 = np.float32(corners)
-    pts2 = np.float32([[0, 0], [width, 0], [0, height], [width, height]])
     M = cv2.getPerspectiveTransform(pts1, pts2)
-    return cv2.warpPerspective(img, M, (width, height))
+
+    dst = cv2.warpPerspective(img, M, (300, 300))
+    return dst
 
 
-def show_info():
-    print(corners)
+'''
+pts1 = np.float32([[56,65],[368,52],[28,387],[389,390]])
+pts2 = np.float32([[50,0],[250,0],[0,300],[300,300]])
 
-    while 1:
-        cv2.imshow("pers", perspective(img))
-        if cv2.waitKey(1) == ord('q'):
-            break
-
-
-if __name__ == '__main__':
-    show_info()
+dst=Perspective("C:/Users/k1017/Desktop/block1/some/IMG_2993.JPG",pts1,pts2)
+plt.subplot(122),plt.imshow(dst),plt.title('Output')
+plt.show()
+'''
