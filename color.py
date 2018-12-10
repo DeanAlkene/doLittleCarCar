@@ -6,7 +6,7 @@
 
 import cv2
 import numpy as np
-import perspective
+import _perspective
 
 CAP = cv2.VideoCapture(1)  # 开摄像头看东西噢
 
@@ -45,10 +45,10 @@ cv2.setMouseCallback('image', draw_rect)
 
 
 # 执行了噢
-print("Please label head and tail (enter 's' to start, 'e' to end): ")
+print("依次框定头尾的颜色：(键入\'s\'以开始，\'e\'以结束)")
 while True:
     _, img = CAP.read()
-    img = perspective.perspective(img)
+    img = _perspective.perspective(img)
     cv2.imshow('image', img)
     if cv2.waitKey(1) == ord('s'):
         print('s')
@@ -69,27 +69,34 @@ blue, green = [img[
                ] for i in range(2)]
 
 # 计算当前情况下所需的bgr颜色在hsv色彩空间的取值范围
-b_hsv = cv2.cvtColor(blue, cv2.COLOR_RGB2HSV)
-g_hsv = cv2.cvtColor(green, cv2.COLOR_RGB2HSV)
+b_hsv = cv2.cvtColor(blue, cv2.COLOR_BGR2HSV)
+g_hsv = cv2.cvtColor(green, cv2.COLOR_BGR2HSV)
 b_mean_hsv, g_mean_hsv = [clr.mean(axis=0).mean(axis=0) for clr in (b_hsv, g_hsv)]
-print("hsv of head and tail:", '\n', b_mean_hsv, '\n', g_mean_hsv)
+print("头尾的平均hsv值：", '\n', b_mean_hsv, '\n', g_mean_hsv)
 
-offset = 10  # 名为offset实际应该是variance噢
+offset = 15  # 名为offset实际应该是variance噢
 lower_g, upper_g = g_mean_hsv - offset, g_mean_hsv + offset
-lower_b, upper_b = b_mean_hsv - 2*offset, b_mean_hsv + 2*offset
+lower_b, upper_b = b_mean_hsv - offset, b_mean_hsv + offset
 lower_b[1] = lower_g[1] = 128
 lower_b[2] = lower_g[2] = 46
 upper_b[1] = upper_g[1] = upper_b[2] = upper_g[2] = 255
-
+print("lower_b: ",lower_b)
+print("lower_g：",lower_g)
 
 # 最终得到头尾颜色识别函数了噢
+kernel = np.ones((5,5),np.uint8)
+
 def Thresh_green(img):
-    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower_g, upper_g)
+    mask = cv2.erode(mask, kernel, iterations=4)
+    mask = cv2.dilate(mask, kernel, iterations=4)
     return mask
 
 
 def Thresh_blue(img):
-    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower_b, upper_b)
+    mask = cv2.erode(mask, kernel, iterations=4)
+    mask = cv2.dilate(mask, kernel, iterations=4)
     return mask

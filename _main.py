@@ -10,19 +10,24 @@ import _perspective
 import color
 import detect
 
-cap = cv2.VideoCapture(1) # 0 为电脑自带摄像头，1 为外接的摄像头，在 while 循环中使用 cv2.waitKey(100) 以放慢fps
+cap = cv2.VideoCapture(1)  # 0 为电脑自带摄像头，1 为外接的摄像头，在 while 循环中使用 cv2.waitKey(100) 以放慢fps
 
 cv2.namedWindow("image")
+cv2.namedWindow("hsv")
 cv2.namedWindow("b")
 cv2.namedWindow("g")
-cv2.moveWindow("image",500,0)
-cv2.moveWindow("b",1000,0)
-cv2.moveWindow("g",1000,400)
+cv2.moveWindow("image", 500, 0)
+cv2.moveWindow("hsv", 500, 400)
+cv2.moveWindow("b", 1000, 0)
+cv2.moveWindow("g", 1000, 400)
 
 while cap.isOpened():
     _, img = cap.read()
     img = _perspective.perspective(img)  # 进行了透视变换噢
     # img = cv2.GaussianBlur(img, (9, 9), 0)
+
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    cv2.imshow("hsv", hsv)
 
     # 看看蓝色绿色识别的怎么样噢
     b, g = color.Thresh_blue(img), color.Thresh_green(img)
