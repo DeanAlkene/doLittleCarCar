@@ -134,29 +134,3 @@ def Thresh_red(img):
     mask = cv2.erode(mask, kernel, iterations=3)
     mask = cv2.dilate(mask, kernel, iterations=4)
     return mask
-
-#
-# def Thresh_red(img):
-#     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-#
-#     mask = cv2.inRange(hsv, np.array([0,128,46]), np.array([15,255,255]))
-#     mask2 = cv2.inRange(hsv,np.array([164,128,46]), np.array([180,255,255]))
-#     mask = cv2.bitwise_or(mask, mask2)
-#
-#     mask = cv2.erode(mask, kernel, iterations=4)
-#     mask = cv2.dilate(mask, kernel, iterations=4)
-#     return mask
-
-# while True:
-#     _, img = CAP.read()
-#     th_b = Thresh_blue(img)
-#     th_g = Thresh_green(img)
-#     th_r = Thresh_red(img)
-#
-#     cv2.imshow("img",img)
-#
-#     cv2.imshow("th_b",th_b)
-#     cv2.imshow("th_g", th_g)
-#     cv2.imshow("th_r", th_r)
-#     if cv2.waitKey(1)==ord('q'):
-#         break
